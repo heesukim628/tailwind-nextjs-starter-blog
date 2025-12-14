@@ -20,7 +20,9 @@ export default function Home({ posts }) {
         <ul className="divide-y divide-gray-200 dark:divide-gray-700">
           {!posts.length && 'No posts found.'}
           {posts.slice(0, MAX_DISPLAY).map((post) => {
-            const { slug, date, title, summary, tags } = post
+            const { slug, date, title, summary, tags, content } = post
+            // Extract first 200 characters from content, or use summary as fallback
+            const excerpt = content ? content.slice(0, 200).trim() + '...' : summary
             return (
               <li key={slug} className="py-12">
                 <article>
@@ -49,7 +51,8 @@ export default function Home({ posts }) {
                           </div>
                         </div>
                         <div className="prose max-w-none text-gray-500 dark:text-gray-400">
-                          {summary}
+                          {content}
+                          {excerpt}
                         </div>
                       </div>
                       <div className="text-base leading-6 font-medium">
