@@ -129,17 +129,19 @@ export const Blog = defineDocumentType(() => ({
       type: 'string',
       resolve: (doc) => {
         if (doc.summary) return doc.summary
-        
+
         // Extract first 200 characters from content
         const content = doc.body.raw
-        .replace(/^_Title_:.*$/gm, '') // Remove _Title_ lines
-        .replace(/^_Author_:.*$/gm, '') // Remove _Author_ lines
-        .replace(/^#.*$/gm, '') // Remove headers
-        .trim()
-        return content
+          .replace(/^_Title_:.*$/gm, '') // Remove _Title_ lines
+          .replace(/^_Author_:.*$/gm, '') // Remove _Author_ lines
           .replace(/^#.*$/gm, '') // Remove headers
           .trim()
-          .slice(0, 100) + '...'
+        return (
+          content
+            .replace(/^#.*$/gm, '') // Remove headers
+            .trim()
+            .slice(0, 100) + '...'
+        )
       },
     },
   },

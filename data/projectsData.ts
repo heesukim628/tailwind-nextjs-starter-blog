@@ -7,11 +7,11 @@ interface Project {
 
 const projectsData: Project[] = [
   {
-    title: 'Heesu\'s Liked Music',
+    title: "Heesu's Liked Music",
     description: ``,
     imgSrc: '/static/images/google.png',
     href: 'https://music.youtube.com/playlist?list=PLi2rqdJeAsjuVN0xZFXIxLBHwNeTBCSGB&si=5A0VQZkIvrY9xjyl',
-  }
+  },
 ]
 
 export default projectsData
