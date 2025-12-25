@@ -20,7 +20,16 @@ interface ListLayoutProps {
   initialDisplayPosts?: CoreContent<Blog>[]
   pagination?: PaginationProps
 }
-
+const CATEGORIES = {
+  투병일기: ['기', '승', '전', '결'],
+}
+const TAG_DISPLAY_NAMES: Record<string, string> = {
+  기: '기 2018',
+  승: '승 2023',
+  전: '전 2025',
+  결: '결 2026',
+}
+const getTagDisplayName = (tag: string) => TAG_DISPLAY_NAMES[tag] || tag
 function Pagination({ totalPages, currentPage }: PaginationProps) {
   const pathname = usePathname()
   const segments = pathname.split('/')
@@ -79,6 +88,18 @@ export default function ListLayoutWithTags({
 
   const displayPosts = initialDisplayPosts.length > 0 ? initialDisplayPosts : posts
 
+  // Get all tags that are in categories
+  const categorizedTags = new Set(Object.values(CATEGORIES).flat())
+
+  // Get tags that aren't in any category
+  const uncategorizedTags = Object.keys(tagCounts)
+    .filter((tag) => !categorizedTags.has(tag))
+    .sort((a, b) => tagCounts[b] - tagCounts[a])
+
+  const currentTag = pathname.startsWith('/tags/')
+    ? pathname.split('/tags/')[1]?.split('/')[0]
+    : null
+
   return (
     <>
       <div>
@@ -90,7 +111,7 @@ export default function ListLayoutWithTags({
         <div className="flex sm:space-x-24">
           <div className="hidden h-full max-h-screen max-w-[280px] min-w-[280px] flex-wrap overflow-auto rounded-sm bg-gray-50 pt-5 shadow-md sm:flex dark:bg-gray-900/70 dark:shadow-gray-800/40">
             <div className="px-6 py-4">
-              {pathname.startsWith('/blog') ? (
+              {/* {pathname.startsWith('/blog') ? (
                 <h3 className="text-primary-500 font-bold uppercase">All Posts</h3>
               ) : (
                 <Link
@@ -99,8 +120,61 @@ export default function ListLayoutWithTags({
                 >
                   All Posts
                 </Link>
-              )}
-              <ul>
+              )} */}
+              {/* Categorized Tags */}
+              <div className="space-y-4">
+                {Object.entries(CATEGORIES).map(([category, tags]) => (
+                  <div key={category}>
+                    <h3 className="text-primary-500 text-md mb-2 inline py-4 font-bold uppercase">
+                      {category}
+                    </h3>
+                    <ul className="ml-2 space-y-1 border-l-2 border-gray-200 pl-3 dark:border-gray-700">
+                      {tags
+                        .filter((tag) => tagCounts[tag] > 0)
+                        .sort((a, b) => tagCounts[b] - tagCounts[a])
+                        .map((tag) => (
+                          <li key={tag}>
+                            <Link
+                              href={`/tags/${tag}`}
+                              className={`${
+                                currentTag === tag
+                                  ? 'text-primary-500 font-semibold'
+                                  : 'hover:text-primary-500 dark:hover:text-primary-500 text-gray-500 dark:text-gray-400'
+                              } block py-1 text-sm`}
+                            >
+                              {getTagDisplayName(tag)} ({tagCounts[tag]})
+                            </Link>
+                          </li>
+                        ))}
+                    </ul>
+                  </div>
+                ))}
+                {/* Uncategorized Tags */}
+                {uncategorizedTags.length > 0 && (
+                  <div className="mt-6 border-t border-gray-200 pt-4 dark:border-gray-700">
+                    <h3 className="text-s mb-2 font-bold text-gray-500 uppercase dark:text-gray-400">
+                      그 외
+                    </h3>
+                    <ul className="space-y-1">
+                      {uncategorizedTags.map((tag) => (
+                        <li key={tag}>
+                          <Link
+                            href={`/tags/${tag}`}
+                            className={`${
+                              currentTag === tag
+                                ? 'text-primary-500 font-semibold'
+                                : 'hover:text-primary-500 dark:hover:text-primary-500 text-gray-500 dark:text-gray-400'
+                            } block py-1 text-sm`}
+                          >
+                            {tag} ({tagCounts[tag]})
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+              {/* <ul>
                 {sortedTags.map((t) => {
                   return (
                     <li key={t} className="my-3">
@@ -120,7 +194,7 @@ export default function ListLayoutWithTags({
                     </li>
                   )
                 })}
-              </ul>
+              </ul> */}
             </div>
           </div>
           <div>
